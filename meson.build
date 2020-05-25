@@ -1,5 +1,5 @@
 # project name and programming language
-project('com.github.kalexal-kaa.gtk-radio', 'vala', 'c', version: '0.1.0')
+project('com.github.kalexal-kaa.gtk-radio', 'vala', 'c', version: '1.0.0')
 
 message ('project name and programming language')
 
