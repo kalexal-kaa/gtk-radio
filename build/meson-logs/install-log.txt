@@ -1,0 +1,9 @@
+# List of files installed by Meson
+# Does not contain files installed by custom scripts.
+/usr/share/applications/com.github.kalexal-kaa.gtk-radio.desktop
+/usr/share/metainfo/com.github.kalexal-kaa.gtk-radio.appdata.xml
+/usr/bin/com.github.kalexal-kaa.gtk-radio
+/usr/share/icons/hicolor/128x128/apps/com.github.kalexal-kaa.gtk-radio.svg
+/usr/share/icons/hicolor/128x128@2/apps/com.github.kalexal-kaa.gtk-radio.svg
+/usr/share/icons/hicolor/256x256/apps/com.github.kalexal-kaa.gtk-radio.svg
+/usr/share/icons/hicolor/256x256@2/apps/com.github.kalexal-kaa.gtk-radio.svg

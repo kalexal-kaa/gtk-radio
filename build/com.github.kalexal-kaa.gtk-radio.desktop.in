@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Radio
+Comment=
+GenericName=
+Exec=com.github.kalexal-kaa.gtk-radio %U
+Icon=com.github.kalexal-kaa.gtk-radio
+Terminal=false
+Categories=GNOME;GTK;Audio;Player;
+Keywords=Audio;Player;Radio;
