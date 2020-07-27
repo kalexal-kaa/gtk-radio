@@ -40,7 +40,7 @@ private int mode;
         toolbar.get_style_context ().add_class (STYLE_CLASS_PRIMARY_TOOLBAR);
         var add_icon = new Gtk.Image.from_icon_name ("list-add", IconSize.SMALL_TOOLBAR);
         var delete_icon = new Gtk.Image.from_icon_name ("list-remove", IconSize.SMALL_TOOLBAR);
-        var edit_icon = new Gtk.Image.from_icon_name ("document-properties", IconSize.SMALL_TOOLBAR);
+        var edit_icon = new Gtk.Image.from_icon_name ("accessories-text-editor", IconSize.SMALL_TOOLBAR);
         var add_button = new Gtk.ToolButton (add_icon, "Add");
         add_button.is_important = true;
         var delete_button = new Gtk.ToolButton (delete_icon, "Delete");
@@ -76,12 +76,24 @@ private int mode;
    vbox_player_page.pack_start(button_play,false,true,0);
    vbox_player_page.pack_start(button_stop,false,true,0);
    stack.add(vbox_player_page);
-   entry_name = new Entry();
+        entry_name = new Entry();
+        entry_name.set_icon_from_icon_name (Gtk.EntryIconPosition.SECONDARY, "edit-clear");
+        entry_name.icon_press.connect ((pos, event) => {
+        if (pos == Gtk.EntryIconPosition.SECONDARY) {
+              entry_name.set_text("");
+           }
+        });
         var label_name = new Label.with_mnemonic ("_Name:");
         var hbox_name = new Box (Orientation.HORIZONTAL, 20);
         hbox_name.pack_start (label_name, false, true, 0);
         hbox_name.pack_start (entry_name, true, true, 0);
         entry_url = new Entry();
+        entry_url.set_icon_from_icon_name (Gtk.EntryIconPosition.SECONDARY, "edit-clear");
+        entry_url.icon_press.connect ((pos, event) => {
+        if (pos == Gtk.EntryIconPosition.SECONDARY) {
+              entry_url.set_text("");
+           }
+        });
         var label_url = new Label.with_mnemonic ("_URL:");
         var hbox_url = new Box (Orientation.HORIZONTAL, 20);
         hbox_url.pack_start (label_url, false, true, 0);
