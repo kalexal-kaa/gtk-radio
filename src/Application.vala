@@ -1,11 +1,11 @@
 
 
-namespace Radio {
+namespace Raddiola {
     public class Application : Gtk.Application {
         public MainWindow app_window;
 
         public Application() {
-            Object(flags: ApplicationFlags.FLAGS_NONE, application_id: "com.github.kalexal-kaa.gtk-radio");
+            Object(flags: ApplicationFlags.FLAGS_NONE, application_id: "com.github.alexkdeveloper.raddiola");
         }
 
         protected override void activate() {
@@ -20,7 +20,7 @@ namespace Radio {
 
         public static int main(string[] args) {
             Gst.init (ref args);
-            var app = new Radio.Application();
+            var app = new Raddiola.Application();
             return app.run(args);
         }
     }

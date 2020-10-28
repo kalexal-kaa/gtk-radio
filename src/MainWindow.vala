@@ -2,7 +2,7 @@
 using Gtk;
 using Gst;
 
-namespace Radio {
+namespace Raddiola {
 
     public class MainWindow : Gtk.ApplicationWindow {
 
@@ -15,44 +15,73 @@ private TreeView tree_view;
 private GLib.List<string> list;
 private Entry entry_name;
 private Entry entry_url;
-private Button button_play;
-private Button button_stop;
+private Button back_button;
+private Button add_button;
+private Button delete_button;
+private Button edit_button;
+private Button play_button;
+private Button stop_button;
 private string directory_path;
 private string item;
 private int mode;
 
         public MainWindow(Gtk.Application application) {
             GLib.Object(application: application,
-                         title: "Radio",
+                         title: "Raddiola",
                          window_position: WindowPosition.CENTER,
                          resizable: true,
-                         height_request: 300,
-                         width_request: 400,
+                         height_request: 500,
+                         width_request: 500,
                          border_width: 10);
         }        
 
         construct {        
+        Gtk.HeaderBar headerbar = new Gtk.HeaderBar();
+        headerbar.get_style_context().add_class(Gtk.STYLE_CLASS_FLAT);
+        headerbar.show_close_button = true;
+        set_titlebar(headerbar);
+        back_button = new Gtk.Button ();
+            back_button.set_image (new Gtk.Image.from_icon_name ("go-previous-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+            back_button.vexpand = false;
+        add_button = new Gtk.Button ();
+            add_button.set_image (new Gtk.Image.from_icon_name ("list-add-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+            add_button.vexpand = false;
+        delete_button = new Gtk.Button ();
+            delete_button.set_image (new Gtk.Image.from_icon_name ("list-remove-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+            delete_button.vexpand = false;
+        edit_button = new Gtk.Button ();
+            edit_button.set_image (new Gtk.Image.from_icon_name ("document-edit-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+            edit_button.vexpand = false;
+        play_button = new Gtk.Button();
+            play_button.set_image (new Gtk.Image.from_icon_name ("media-playback-start-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+            play_button.vexpand = false;
+        stop_button = new Gtk.Button();
+            stop_button.set_image (new Gtk.Image.from_icon_name ("media-playback-stop-symbolic", Gtk.IconSize.SMALL_TOOLBAR));
+            stop_button.vexpand = false;  
+        back_button.set_tooltip_text("back");
+        add_button.set_tooltip_text("add station");
+        delete_button.set_tooltip_text("delete station");
+        edit_button.set_tooltip_text("edit station");
+        play_button.set_tooltip_text("play");
+        stop_button.set_tooltip_text("stop");
+        back_button.clicked.connect(on_back_clicked);
+        add_button.clicked.connect(on_add_clicked);
+        delete_button.clicked.connect(on_delete_dialog);
+        edit_button.clicked.connect(on_edit_clicked);
+        play_button.clicked.connect(on_play_station);
+        stop_button.clicked.connect(on_stop_station);
+        headerbar.pack_start(back_button);
+        headerbar.pack_start(add_button);
+        headerbar.pack_start(delete_button);
+        headerbar.pack_start(edit_button);
+        headerbar.pack_end(stop_button);
+        headerbar.pack_end(play_button);
+        set_widget_visible(back_button,false);
+        set_widget_visible(stop_button,false);
           stack = new Stack();
           stack.set_transition_duration (600);
           stack.set_transition_type (StackTransitionType.SLIDE_LEFT_RIGHT);
           add (stack);
-        var toolbar = new Toolbar ();
-        toolbar.get_style_context ().add_class (STYLE_CLASS_PRIMARY_TOOLBAR);
-        var add_icon = new Gtk.Image.from_icon_name ("list-add", IconSize.SMALL_TOOLBAR);
-        var delete_icon = new Gtk.Image.from_icon_name ("list-remove", IconSize.SMALL_TOOLBAR);
-        var edit_icon = new Gtk.Image.from_icon_name ("accessories-text-editor", IconSize.SMALL_TOOLBAR);
-        var add_button = new Gtk.ToolButton (add_icon, "Add");
-        add_button.is_important = true;
-        var delete_button = new Gtk.ToolButton (delete_icon, "Delete");
-        delete_button.is_important = true;
-        var edit_button = new Gtk.ToolButton (edit_icon, "Edit");
-        edit_button.is_important = true;
-        toolbar.add(add_button);
-        toolbar.add(delete_button);
-        toolbar.add(edit_button);
-        add_button.clicked.connect(on_add_clicked);
-        delete_button.clicked.connect(on_delete_dialog);
-        edit_button.clicked.connect(on_edit_clicked);
    list_store = new Gtk.ListStore(Columns.N_COLUMNS, typeof(string));
            tree_view = new TreeView.with_model(list_store);
            var text = new CellRendererText ();
@@ -65,19 +94,11 @@ private int mode;
    var scroll = new ScrolledWindow (null, null);
         scroll.set_policy (PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
         scroll.add (this.tree_view);
-   button_play = new Button.with_label("PLAY");
-   button_stop = new Button.with_label("STOP");
-   button_play.clicked.connect(on_play_station);
-   button_stop.clicked.connect(on_stop_station);
-   button_stop.set_sensitive(false);
    vbox_player_page = new Box(Orientation.VERTICAL,20);
-   vbox_player_page.pack_start(toolbar,false,true,0);
    vbox_player_page.pack_start(scroll,true,true,0);
-   vbox_player_page.pack_start(button_play,false,true,0);
-   vbox_player_page.pack_start(button_stop,false,true,0);
    stack.add(vbox_player_page);
         entry_name = new Entry();
-        entry_name.set_icon_from_icon_name (Gtk.EntryIconPosition.SECONDARY, "edit-clear");
+        entry_name.set_icon_from_icon_name (Gtk.EntryIconPosition.SECONDARY, "edit-clear-symbolic");
         entry_name.icon_press.connect ((pos, event) => {
         if (pos == Gtk.EntryIconPosition.SECONDARY) {
               entry_name.set_text("");
@@ -88,7 +109,7 @@ private int mode;
         hbox_name.pack_start (label_name, false, true, 0);
         hbox_name.pack_start (entry_name, true, true, 0);
         entry_url = new Entry();
-        entry_url.set_icon_from_icon_name (Gtk.EntryIconPosition.SECONDARY, "edit-clear");
+        entry_url.set_icon_from_icon_name (Gtk.EntryIconPosition.SECONDARY, "edit-clear-symbolic");
         entry_url.icon_press.connect ((pos, event) => {
         if (pos == Gtk.EntryIconPosition.SECONDARY) {
               entry_url.set_text("");
@@ -100,10 +121,7 @@ private int mode;
         hbox_url.pack_start (entry_url, true, true, 0);
         var button_ok = new Button.with_label("OK");
         button_ok.clicked.connect(on_ok_clicked);
-        var button_back = new Button.with_label("<<< BACK");
-        button_back.clicked.connect(on_back_clicked);
         vbox_edit_page = new Box(Orientation.VERTICAL,20);
-        vbox_edit_page.pack_start(button_back,false,true,0);
         vbox_edit_page.pack_start(hbox_name,false,true,0);
         vbox_edit_page.pack_start(hbox_url,false,true,0);
         vbox_edit_page.pack_start(button_ok,false,true,0);
@@ -140,14 +158,14 @@ private int mode;
         }
       player.uri = uri;
       player.set_state (State.PLAYING);
-      button_play.set_sensitive(false);
-      button_stop.set_sensitive(true);
+      set_widget_visible(play_button,false);
+      set_widget_visible(stop_button,true);
    }
    
    private void on_stop_station(){
       player.set_state (State.READY);
-      button_play.set_sensitive(true);
-      button_stop.set_sensitive(false);
+      set_widget_visible(play_button,true);
+      set_widget_visible(stop_button,false);
    }
    
    private void on_select_item () {
@@ -167,6 +185,7 @@ private int mode;
    
    private void on_add_clicked () {
               stack.visible_child = vbox_edit_page;
+              set_buttons_on_edit_page();
               mode = 1;
               if(!is_empty(entry_name.get_text())){
                     entry_name.set_text("");
@@ -186,6 +205,7 @@ private int mode;
                return;
            }
         stack.visible_child = vbox_edit_page;
+        set_buttons_on_edit_page();
         mode = 0;
         entry_name.set_text(item);
         string url;
@@ -257,11 +277,12 @@ private int mode;
         }
         break;
       }
-      stack.visible_child = vbox_player_page;
+      on_back_clicked();
    }
    
    private void on_back_clicked(){
        stack.visible_child = vbox_player_page;
+       set_buttons_on_player_page();
    }
    
    private void on_delete_dialog(){
@@ -307,6 +328,25 @@ private int mode;
            }
        }
    
+   private void set_widget_visible (Gtk.Widget widget, bool visible) {
+         widget.no_show_all = !visible;
+         widget.visible = visible;
+  }
+   
+   private void set_buttons_on_player_page(){
+       set_widget_visible(back_button,false);
+       set_widget_visible(add_button,true);
+       set_widget_visible(delete_button,true);
+       set_widget_visible(edit_button,true);
+   }
+   
+   private void set_buttons_on_edit_page(){
+       set_widget_visible(back_button,true);
+       set_widget_visible(add_button,false);
+       set_widget_visible(delete_button,false);
+       set_widget_visible(edit_button,false);
+   }
+   
    private bool is_empty(string str){
         return str.strip().length == 0;
       }
@@ -315,9 +355,9 @@ private int mode;
            TEXT, N_COLUMNS
        }
    private void create_default_stations(){
-          string[] name_station = {"NonStopPlay","Classical Music","Fip Radio","Jazz Legends"};
-          string[] url_station = {"http://stream.nonstopplay.co.uk/nsp-128k-mp3","http://stream.srg-ssr.ch/m/rsc_de/mp3_128","http://direct.fipradio.fr/live/fip-midfi.mp3","http://jazz128legends.streamr.ru/"};
-          for(int i=0;i<4;i++){
+          string[] name_station = {"NonStopPlay","Classical Music","Fip Radio","Jazz Legends","Joy Radio","Live-icy","Music Radio","Radio Electron","Dubstep","Trancemission"};
+          string[] url_station = {"http://stream.nonstopplay.co.uk/nsp-128k-mp3","http://stream.srg-ssr.ch/m/rsc_de/mp3_128","http://direct.fipradio.fr/live/fip-midfi.mp3","http://jazz128legends.streamr.ru/","http://airtime.joyradio.cc:8000/airtime_192.mp3","http://live-icy.gss.dr.dk:8000/A/A05H.mp3","http://ice-the.musicradio.com/CapitalXTRANationalMP3","http://radio-electron.ru:8000/128","http://air.radiorecord.ru:8102/dub_320","http://air.radiorecord.ru:8102/tm_320"};
+          for(int i=0;i<10;i++){
             try {
                  FileUtils.set_contents (directory_path+"/"+name_station[i], url_station[i]);
               } catch (Error e) {
